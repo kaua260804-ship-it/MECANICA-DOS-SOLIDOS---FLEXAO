@@ -1,0 +1,14 @@
+/* module4-6.css — módulos técnicos (tensões, geometria, fechamento) */
+
+.m4-formulas { display: grid; gap: var(--sp-3); }
+
+.m4-case-list li { margin-bottom: var(--sp-2); font-size: var(--fs-md); }
+
+.m5-top { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+@media (max-width: 900px) { .m5-top { grid-template-columns: 1fr; } }
+
+.m6-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}

@@ -1,0 +1,84 @@
+/* module3.css — Módulo 3 (carregamentos e deformação animada) */
+
+.m3-loads {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+@media (max-width: 900px) { .m3-loads { grid-template-columns: 1fr; } }
+
+.m3-load-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  text-align: center;
+  transition: transform var(--transition), border-color var(--transition);
+}
+.m3-load-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+.m3-load-card__icon {
+  font-size: 3rem;
+  color: var(--warn);
+  line-height: 1;
+  margin-bottom: var(--sp-2);
+}
+.m3-load-card h3 { font-size: var(--fs-lg); margin-bottom: var(--sp-1); }
+.m3-load-card__unit {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: var(--fs-md);
+  margin-bottom: var(--sp-2);
+}
+.m3-load-card p { font-size: var(--fs-md); color: var(--txt-2); }
+
+.m3-lab {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+}
+.m3-lab__title {
+  font-size: var(--fs-xl);
+  color: var(--accent);
+  margin-bottom: var(--sp-2);
+}
+.m3-lab__toolbar {
+  display: flex;
+  gap: var(--sp-3);
+  margin: var(--sp-3) 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.m3-info-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+@media (max-width: 760px) { .m3-info-chips { grid-template-columns: 1fr; } }
+.m3-chip {
+  background: var(--bg-0);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3);
+  text-align: center;
+}
+.m3-chip--tension { border-color: var(--accent); }
+.m3-chip--compression { border-color: var(--accent-2); }
+.m3-chip--neutral { border-color: var(--ok); }
+.m3-chip__label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: var(--sp-1);
+  font-weight: 700;
+}
+.m3-chip--tension .m3-chip__label { color: var(--accent); }
+.m3-chip--compression .m3-chip__label { color: var(--accent-2); }
+.m3-chip--neutral .m3-chip__label { color: var(--ok); }
+.m3-chip__text { color: var(--txt-2); font-size: var(--fs-md); }

@@ -1,0 +1,68 @@
+/* module2.css — Módulo 2 (conceitos e animação de reações) */
+
+.m2-defs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-3);
+}
+@media (max-width: 900px) { .m2-defs { grid-template-columns: 1fr; } }
+
+.m2-def-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  transition: transform var(--transition);
+}
+.m2-def-card:hover { transform: translateY(-3px); }
+.m2-def-card h3 {
+  font-size: var(--fs-lg);
+  color: var(--accent);
+  margin-bottom: var(--sp-2);
+}
+.m2-def-card p { font-size: var(--fs-md); color: var(--txt-2); }
+
+.m2-animator {
+  margin-top: var(--sp-5);
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+}
+.m2-animator__title {
+  font-size: var(--fs-xl);
+  color: var(--accent);
+  margin-bottom: var(--sp-2);
+}
+.m2-animator__subtitle {
+  color: var(--txt-2);
+  font-size: var(--fs-md);
+  margin-bottom: var(--sp-3);
+}
+
+.m2-reactions-bar {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+  flex-wrap: wrap;
+}
+.m2-reaction-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--bg-0);
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--txt-2);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 450ms ease;
+}
+.m2-reaction-chip.is-visible { opacity: 1; transform: none; border-color: var(--accent); color: var(--accent); }
+.m2-reaction-chip__icon { font-size: 1.3em; }

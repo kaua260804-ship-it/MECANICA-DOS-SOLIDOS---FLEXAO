@@ -1,206 +1,116 @@
 /* =========================================================
-   slidesData.js — CONTEÚDO dos 6 módulos.
-   Edite textos, notas, citações e cronologias aqui.
+   slidesData.js — Conteúdo textual dos 6 módulos.
+   Os cards apontam para as funções de render do engine.js.
    ========================================================= */
 
 const SLIDES_DATA = [
-  // =====================================================
-  // MÓDULO 1 — Histórico & Marcos da Flexão
-  // =====================================================
   {
-    id: "m1",
-    eyebrow: "Módulo 01 · Storytelling",
-    title: "Histórico & Marcos da Flexão",
-    subtitle: "Da ruptura de vigas de Galileu à síntese de Navier",
-    presenter: { name: "Apresentador 1", level: "visual", role: "Fala leve" },
+    id: 1,
+    shortTitle: "1. Abertura",
+    title: "Abertura & Histórico",
+    subtitle: "Apresentação do fenômeno físico da flexão em vigas, acidentes históricos emblemáticos e a evolução científica de Galileu até Euler-Bernoulli.",
+    speakers: "Integrante 1 • Abertura e Contextualização",
     notes: [
-      "Percorra a timeline clicando nas setas ou nos pontos: cada parada revela um marco.",
-      "Galileu (1638) superestimou a resistência porque supôs tensão uniforme na seção — faltava o conceito de linha neutra.",
-      "Euler-Bernoulli (1750) formulou a equação da linha elástica EI·y'' = M(x).",
-      "Navier (1826) generalizou a teoria de tensões (σ = −My/I).",
-      "Feche com o caso real da ponte de Quebec (1907) e por que ele motivou normas modernas."
+      "Contextualize o tema e apresente os 6 módulos.",
+      "Explique o que é flexão pura e simples.",
+      "Comente o caso histórico de Tacoma Narrows (1940).",
+      "Destaque a evolução: Galileu (1638) → Euler-Bernoulli (1750)."
     ],
-    content: {
-      timeline: [
-        { year: "1638", title: "Galileu Galilei", desc: "Duas Novas Ciências. Primeiros ensaios em vigas em balanço; tensão suposta uniforme (superestima a resistência)." },
-        { year: "1678", title: "Robert Hooke", desc: "Lei de Hooke (ut tensio, sic vis): deformação proporcional à força. Base do regime elástico linear." },
-        { year: "1750", title: "Euler–Bernoulli", desc: "Equação da linha elástica: EI·d²y/dx² = M(x). Consolida a teoria de vigas esbeltas." },
-        { year: "1826", title: "Navier", desc: "Résumé des Leçons: teoria geral de tensões na seção; nasce a fórmula σ = −My/I." },
-        { year: "1855", title: "Saint-Venant", desc: "Princípio da decomposição de esforços e torção; consolida a mecânica dos sólidos moderna." },
-        { year: "1907", title: "Ruptura da ponte de Quebec", desc: "Falha estrutural real com 75 vítimas. Impulsiona revisão de coeficientes de segurança e normas modernas." },
-        { year: "1940", title: "Normas modernas", desc: "Consolidação dos estados limites e coeficientes parciais de segurança (base das NBRs atuais)." }
-      ],
-      citation: {
-        text: "A natureza não revela seus segredos a quem não a interroga com a experiência.",
-        cite: "Galileu Galilei — paráfrase de Il Saggiatore (1623)"
-      }
-    }
+    cards: [
+      { id: "m1_c1", tag: "CONCEITO FUNDAMENTAL", title: "O Que é Flexão Pura e Simples?", caption: "Esforços transversais (F) ou momentos fletores (M) curvem o eixo longitudinal da viga, transformando a linha reta indeformada na linha elástica.", render: "renderM1C1" },
+      { id: "m1_c2", tag: "CASO HISTÓRICO (1940)", title: "Colapso de Tacoma Narrows & Fadiga", caption: "Oscilações dinâmicas crescentes de flexão e torção levaram ao colapso estrutural, impulsionando o rigor no cálculo de rigidez e estabilidade.", render: "renderM1C2" },
+      { id: "m1_c3", tag: "EVOLUÇÃO DA TEORIA", title: "Linha do Tempo: Galileu → Euler-Bernoulli", caption: "De Galileu (1638, tensão uniforme incorreta) à hipótese de Euler-Bernoulli (1750): seções planas permanecem planas, gerando deformação linear.", render: "renderM1C3" }
+    ]
   },
-
-  // =====================================================
-  // MÓDULO 2 — Conceito, Tipos de Vigas e Apoios
-  // =====================================================
   {
-    id: "m2",
-    eyebrow: "Módulo 02 · Conceitual / Visual",
-    title: "Conceito de Flexão, Tipos de Vigas e Apoios",
-    subtitle: "Esforços internos, graus de liberdade e reações de apoio",
-    presenter: { name: "Apresentador 2", level: "visual", role: "Fala leve" },
+    id: 2,
+    shortTitle: "2. Apoios",
+    title: "Vigas & Tipos de Apoios",
+    subtitle: "Como as restrições de movimento determinam as reações externas: Apoio Móvel (1º Gênero), Apoio Fixo (2º Gênero) e Engaste (3º Gênero).",
+    speakers: "Integrante 2 • Vínculos Estruturais no Dia a Dia",
     notes: [
-      "Explique flexão pura (só M) vs. flexão simples (M + V).",
-      "Apoio móvel: 1 reação vertical. Fixo: Rv + Rh. Engaste: Rv + Rh + M.",
-      "Use o botão 'Play' para soltar a carga e o botão 'Reações' para revelar o diagrama de corpo livre.",
-      "Exemplo real: aparelho de apoio elastomérico em pontes (móvel) vs. marquise engastada."
+      "Apoio Móvel: 1 reação (Ry). Permite dilatação.",
+      "Apoio Fixo: 2 reações (Rx, Ry). Permite rotação.",
+      "Engaste: 3 reações (Rx, Ry, M). Bloqueia tudo.",
+      "Exemplos reais: rolete de ponte, pino de portão, marquise."
     ],
-    content: {
-      definitions: [
-        { term: "Flexão pura", desc: "Atua apenas momento fletor M; esforço cortante V = 0. Ex.: trecho central de viga com cargas simétricas." },
-        { term: "Flexão simples", desc: "Atuam simultaneamente M(x) e V(x). Caso mais comum em vigas de edifícios e pontes." },
-        { term: "Momento fletor M", desc: "Tende a curvar o eixo da viga. Gera tração em uma face e compressão na oposta." },
-        { term: "Esforço cortante V", desc: "Tende a cisalhar a seção. Responsável pelas tensões tangenciais." }
-      ],
-      supports: [
-        { type: "Apoio móvel (rolete)", reactions: "1 reação vertical (Rv)", dof: "Bloqueia translação vertical.", real: "Aparelho de apoio elastomérico em pontes." },
-        { type: "Apoio fixo (pino)", reactions: "Rv + Rh", dof: "Bloqueia translação vertical e horizontal.", real: "Apoio articulado em pórticos metálicos." },
-        { type: "Engaste (fixo rígido)", reactions: "Rv + Rh + M", dof: "Bloqueia translação e rotação.", real: "Marquises engastadas em fachadas." }
-      ]
-    }
+    cards: [
+      { id: "m2_c1", tag: "1º GÊNERO • 1 REAÇÃO (Ry)", title: "Apoio Móvel (Roletes / Neoprene de Ponte)", caption: "Bloqueia apenas o deslocamento vertical (Ry), permitindo livre dilatação horizontal (Δx) e rotação angular (θ) sem gerar tensões térmicas.", render: "renderM2C1" },
+      { id: "m2_c2", tag: "2º GÊNERO • 2 REAÇÕES (Rx, Ry)", title: "Apoio Fixo (Pino Articulado / Dobradiça)", caption: "Impede translação vertical (Ry) e horizontal (Rx) sob cargas inclinadas, mas permite livre rotação (θ) da viga sem momento reativo.", render: "renderM2C2" },
+      { id: "m2_c3", tag: "3º GÊNERO • 3 REAÇÕES (Rx, Ry, M)", title: "Engaste (Marquise / Prateleira na Parede)", caption: "Restringe totalmente translações (Rx, Ry) e rotação (θ), fazendo surgir um Momento Fletor Reativo (M) na parede para equilibrar o balanço.", render: "renderM2C3" }
+    ]
   },
-
-  // =====================================================
-  // MÓDULO 3 — Carregamentos & Laboratório Virtual
-  // =====================================================
   {
-    id: "m3",
-    eyebrow: "Módulo 03 · Demonstração ao Vivo",
-    title: "Carregamentos & Laboratório Virtual de Deformação",
-    subtitle: "Carga concentrada, distribuída e o encurtamento das fibras",
-    presenter: { name: "Apresentador 3", level: "visual", role: "Demonstração" },
+    id: 3,
+    shortTitle: "3. Cargas & Maquete",
+    title: "Cargas, Maquete & Linha Neutra",
+    subtitle: "Comparação entre cargas concentradas e distribuídas, ensaio físico na maquete biapoiada e comportamento interno de tração, compressão e Linha Neutra.",
+    speakers: "Integrante 3 (Cargas/Maquete) + Integrante 4 (Fibras/LN)",
     notes: [
-      "Diferencie carga pontual (kN), uniforme (kN/m) e variável (triangular).",
-      "No laboratório virtual: clique em 'Play' para carregar a viga e ver as fibras superiores encurtarem (compressão) e as inferiores alongarem (tração).",
-      "Aponte a linha neutra indeformada ao centro.",
-      "Use a demonstração física (régua / tira de borracha) junto com a tela."
+      "Carga pontual concentra tensão. Distribuída espalha.",
+      "A maquete mostra a flecha δ crescendo com o peso.",
+      "Fibras superiores comprimem (azul). Fibras inferiores tracionam (vermelho).",
+      "Linha neutra é o plano de comprimento indeformado."
     ],
-    content: {
-      loadTypes: [
-        { name: "Carga concentrada", unit: "F [N]", icon: "▼", desc: "Força aplicada em um ponto. Ex.: reação de pilar sobre viga." },
-        { name: "Carga distribuída uniforme", unit: "q [N/m]", icon: "▤", desc: "Constante ao longo do vão. Ex.: peso próprio de laje, neve." },
-        { name: "Carga distribuída variável", unit: "w(x) [N/m]", icon: "◢", desc: "Varia linearmente (ex.: empuxo hidrostático, vento)." }
-      ]
-    }
+    cards: [
+      { id: "m3_c1", tag: "CARREGAMENTOS EXTERNOS", title: "Carga Pontual (F) vs. Distribuída (q)", caption: "Alternância entre carga concentrada no meio do vão e carga uniformemente distribuída (q = F/L), comparando reações e flecha máxima (δ).", render: "renderM3C1" },
+      { id: "m3_c2", tag: "ENSAIO EXPERIMENTAL", title: "Simulação da Maquete Física Biapoiada", caption: "Aplicação gradual de pesos no centro da maquete com leitura em tempo real da flecha vertical (δ) e retorno elástico ao descarregar.", render: "renderM3C2" },
+      { id: "m3_c3", tag: "ANATOMIA INTERNA (INT. 4)", title: "Compressão, Tração e Linha Neutra (LN)", caption: "Fibras superiores comprimidas em Azul (-σ), inferiores tracionadas em Vermelho (+σ) e plano central Dourado sem variação de comprimento (ε = 0).", render: "renderM3C3" }
+    ]
   },
-
-  // =====================================================
-  // MÓDULO 4 — Tensões no Regime Elástico & Experimental
-  // =====================================================
   {
-    id: "m4",
-    eyebrow: "Módulo 04 · Técnico + Pesquisa",
-    title: "Tensões no Regime Elástico & Estudo Experimental",
-    subtitle: "Fórmula da flexão, Lei de Hooke e ensaios em concreto armado",
-    presenter: { name: "Apresentador 4", level: "tech", role: "Fala técnica" },
+    id: 4,
+    shortTitle: "4. Tensões & Lab",
+    title: "Tensões & Ensaio Científico (Civil)",
+    subtitle: "Equação da flexão σ = -M·y/I, perfil linear de tensões na seção transversal, ensaio de flexão em laboratório e Lei de Hooke.",
+    speakers: "Integrante 4 • Formulação Matemática e Laboratório",
     notes: [
-      "Deduza σ = −My/I a partir da Lei de Hooke e da compatibilidade de deformações.",
-      "Explique FS = σ_adm / σ_max ≥ 1,5.",
-      "Estudo de caso: ensaio de flexão em 4 pontos em viga de concreto armado.",
-      "Concreto fissura na zona tracionada; armadura de aço assume o esforço.",
-      "Cite ABNT NBR 6118 (estruturas de concreto)."
+      "Deduza σ = -My/I.",
+      "Perfil de tensão é triangular (borboleta).",
+      "Ensaio de 4 pontos: fissura na zona tracionada.",
+      "Lei de Hooke: σ = E·ε."
     ],
-    content: {
-      formulas: [
-        { label: "Fórmula da Flexão", latex: "\\sigma_x = -\\dfrac{M \\cdot y}{I}" },
-        { label: "Lei de Hooke (1D)", latex: "\\sigma = E \\cdot \\varepsilon" },
-        { label: "Módulo de Resistência", latex: "W = \\dfrac{I}{c} \\;\\Rightarrow\\; \\sigma_{max} = \\dfrac{M_{max}}{W}" },
-        { label: "Fator de Segurança", latex: "FS = \\dfrac{\\sigma_{adm}}{\\sigma_{max}} \\geq 1{,}5" }
-      ],
-      caseStudy: {
-        title: "Ensaio de flexão em 4 pontos — concreto armado",
-        points: [
-          "Viga biapoiada de concreto armado ensaiada até ruptura.",
-          "Zona tracionada (inferior) fissura primeiro — concreto tem baixa resistência à tração (f_ct ≈ 10% de f_c).",
-          "Armadura de aço (CA-50, f_yk = 500 MPa) entra em ação e garante ductilidade.",
-          "Norma: ABNT NBR 6118 — Projeto de estruturas de concreto."
-        ],
-        reference: "Ref.: ABNT NBR 6118:2023; Beer & Johnston — Mecânica dos Materiais, cap. 4; Hibbeler — Resistência dos Materiais, cap. 6."
-      },
-      citation: {
-        text: "A resistência dos materiais é a ciência que estuda as condições de equilíbrio e deformação dos corpos sólidos.",
-        cite: "Claude-Louis Navier — Résumé des Leçons (1826)"
-      }
-    }
+    cards: [
+      { id: "m4_c1", tag: "EQUAÇÃO DA FLEXÃO: σ = -M·y / I", title: "Perfil Triangular (Borboleta) de Tensões", caption: "A tensão normal cresce linearmente a partir da Linha Neutra (y = 0, σ = 0) até atingir os picos máximos de compressão e tração nas bordas (±c).", render: "renderM4C1" },
+      { id: "m4_c2", tag: "LABORATÓRIO ENG. CIVIL", title: "Ensaio de Flexão em 4 Pontos (Concreto)", caption: "Prensa universal aplica carga em prisma de concreto: na zona de momento constante, surge fissura na face inferior tracionada (justificando o aço).", render: "renderM4C2" },
+      { id: "m4_c3", tag: "REGIME ELÁSTICO LINEAR", title: "Lei de Hooke Sincronizada (σ = E · ε)", caption: "Enquanto a tensão permanece abaixo do limite de escoamento, deformação e curvatura obedecem à reta de rigidez E, sem deformação residual.", render: "renderM4C3" }
+    ]
   },
-
-  // =====================================================
-  // MÓDULO 5 — Geometria da Seção & Otimização
-  // =====================================================
   {
-    id: "m5",
-    eyebrow: "Módulo 05 · Técnico + Cálculos",
-    title: "Geometria da Seção, Momento de Inércia & Otimização",
-    subtitle: "Por que o perfil I vence o retângulo com a mesma massa",
-    presenter: { name: "Apresentador 5", level: "tech", role: "Fala técnica" },
+    id: 5,
+    shortTitle: "5. Inércia & Otimização",
+    title: "Seções, Inércia & Otimização (Produção)",
+    subtitle: "Como a geometria da seção transversal governa a rigidez à flexão e como a Engenharia de Produção otimiza massa, custo e desempenho industrial.",
+    speakers: "Integrante 5 • Geometria, Inércia (I), Módulo (W) e Indústria",
     notes: [
-      "Compare retângulo, perfil I, tubular e triângulo com a mesma área.",
-      "Perfil I tem maior I e maior W — mais eficiente.",
-      "W = I/c: a fibra mais distante é o que importa.",
-      "Aplicação Eng. Produção: seleção de perfis ABNT NBR 8800 em mezaninos e porta-paletes."
+      "I = b·h³/12. Dobrar h quadruplica a rigidez.",
+      "Perfil I remove material ocioso do centro.",
+      "W = I/c (módulo de resistência).",
+      "Aplicação: racks, pontes rolantes, mezaninos."
     ],
-    content: {
-      formulas: [
-        { label: "Retângulo", latex: "I = \\dfrac{b\\,h^3}{12}, \\quad W = \\dfrac{b\\,h^2}{6}" },
-        { label: "Triângulo", latex: "I = \\dfrac{b\\,h^3}{36}, \\quad W = \\dfrac{b\\,h^2}{24}" },
-        { label: "Perfil I / Tubo", latex: "I = \\dfrac{b\\,h^3 - b_i\\,h_i^3}{12}" }
-      ],
-      optimization: {
-        title: "Otimização Estrutural — Aplicação Eng. de Produção",
-        points: [
-          "Em mezaninos industriais e racks, o perfil I substitui o retângulo com 40–60% menos aço para a mesma capacidade.",
-          "Norma: ABNT NBR 8800 — Projeto de estruturas de aço e mistas.",
-          "Quanto maior I com a mesma área, maior W e menor σ_max → menor custo.",
-          "Conceito-chave: inércia é 'massa distribuída longe da linha neutra'."
-        ]
-      }
-    }
+    cards: [
+      { id: "m5_c1", tag: "INÉRCIA: I = b·h³ / 12", title: "Régua Deitada vs. Régua em Pé", caption: "Sob a mesma carga F, colocar a seção em pé eleva a altura (h) ao cubo, multiplicando o Momento de Inércia (I) e reduzindo drasticamente a flecha (δ).", render: "renderM5C1" },
+      { id: "m5_c2", tag: "EFICIÊNCIA GEOMÉTRICA (W = I / y_máx)", title: "Seção Maciça vs. Perfil I Otimizado", caption: "Remover material perto da Linha Neutra (onde σ ≈ 0) e concentrar nas mesas reduz até 55% da massa mantendo alta resistência à flexão.", render: "renderM5C2" },
+      { id: "m5_c3", tag: "APLICAÇÃO ENG. DE PRODUÇÃO", title: "Ponte Rolante Industrial em Perfil W", caption: "Viga metálica de alma esbelta suporta cargas móveis em galpão fabril com menor peso próprio, menor custo de fundação e maior vão livre.", render: "renderM5C3" }
+    ]
   },
-
-  // =====================================================
-  // MÓDULO 6 — Diagramas V, M + Calculadora + Síntese
-  // =====================================================
   {
-    id: "m6",
-    eyebrow: "Módulo 06 · Técnico + Fechamento",
-    title: "Diagramas (V e M), Calculadora Prática & Síntese Civil × Produção",
-    subtitle: "Estudo de caso numérico ao vivo e painel comparativo final",
-    presenter: { name: "Apresentador 6", level: "tech", role: "Fechamento" },
+    id: 6,
+    shortTitle: "6. Diagramas & Fechamento",
+    title: "Diagramas, Caso Real & Fechamento",
+    subtitle: "Traçado sincronizado de Cortante (DEC) e Momento Fletor (DMF), dimensionamento prático de uma viga real e integração Civil × Produção.",
+    speakers: "Integrante 6 + Apoio 4 & 5 • Síntese Final",
     notes: [
-      "Resolva o caso: viga biapoiada com balanço e carga concentrada.",
-      "Percorra os sliders e mostre V(x) e M(x) se redesenhando.",
-      "Identifique M_max, σ_max e o W necessário.",
-      "Feche com o painel Civil × Produção e a decisão segurança × manutenção × custo."
+      "DEC salta onde há carga concentrada.",
+      "DMF atinge pico onde V = 0.",
+      "Dimensionamento: M → σ → W → verificação FS.",
+      "Síntese: segurança (Civil) + economia (Produção)."
     ],
-    content: {
-      caseTitle: "Estudo de caso: viga de rolamento de ponte rolante",
-      synthesis: {
-        civil: {
-          title: "🏗 Engenharia Civil",
-          items: [
-            "Pontes e viadutos: vigas principais de concreto protendido.",
-            "Lajes de edifícios: dimensionamento à flexão (NBR 6118).",
-            "Vigas de edifícios metálicos (NBR 8800)."
-          ]
-        },
-        production: {
-          title: "⚙ Engenharia de Produção",
-          items: [
-            "Viga de rolamento de ponte rolante / talha transportadora.",
-            "Bases de máquinas industriais (vibração + flexão).",
-            "Porta-paletes e mezaninos: otimização de aço × capacidade.",
-            "Decisão: segurança × manutenção × custo total."
-          ]
-        }
-      }
-    }
+    cards: [
+      { id: "m6_c1", tag: "ESFORÇOS INTERNOS SOLICITANTES", title: "Diagramas Sincronizados: DEC (V) e DMF (M)", caption: "Para carga central P, o Cortante (DEC) salta de +P/2 para -P/2 no meio do vão, exatamente onde o Momento Fletor (DMF) atinge o pico M_máx = P·L/4.", render: "renderM6C1" },
+      { id: "m6_c2", tag: "VERIFICAÇÃO ESTRUTURAL REAL", title: "Dimensionamento Passo a Passo (FS ≥ 1.5)", caption: "Fluxo de cálculo em tempo real: dados do vão e carga → M_máx → tensão atuante σ = M_máx/W → aprovação com Fator de Segurança.", render: "renderM6C2" },
+      { id: "m6_c3", tag: "SÍNTESE MULTIDISCIPLINAR", title: "Engenharia Civil × Engenharia de Produção", caption: "A convergência perfeita: rigor normativo, rigidez e segurança (Civil) aliados à economia de material, leveza e produtividade (Produção).", render: "renderM6C3" }
+    ]
   }
 ];
 

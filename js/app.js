@@ -1,176 +1,159 @@
 /* =========================================================
-   app.js — Controlador principal enxuto.
+   app.js — Controlador Principal
    ========================================================= */
 
 (() => {
   "use strict";
 
   const stage = document.getElementById("stage");
-  const dotsNav = document.getElementById("dotsNav");
+  const navContainer = document.getElementById("moduleNav");
   const btnPrev = document.getElementById("btnPrev");
   const btnNext = document.getElementById("btnNext");
-  const btnFullscreen = document.getElementById("btnFullscreen");
+  const btnPlayPause = document.getElementById("btnPlayPause");
+  const btnRestart = document.getElementById("btnRestart");
   const btnPresenter = document.getElementById("btnPresenter");
-  const btnExplorer = document.getElementById("btnExplorer");
-  const progressFill = document.getElementById("progressFill");
-  const progressLabel = document.getElementById("progressLabel");
+  const playIcon = document.getElementById("playIcon");
+  const playLabel = document.getElementById("playLabel");
+  const cycleTimerEl = document.getElementById("cycleTimer");
 
-  let current = 0;
-  const total = SLIDES_DATA.length;
+  let currentModuleIndex = 0;
+  let isPlaying = true;
+  let cycleStartTime = performance.now();
+  let pausedElapsed = 0;
+  const LOOP_DURATION = 5000; // 5.0s
 
-  // ---------- BUILD ----------
-  function buildSlide(slide, index) {
-    const el = document.createElement("section");
-    el.className = "slide" + (index === 0 ? " slide--active" : "");
-    el.dataset.id = slide.id;
-    el.setAttribute("aria-hidden", index === 0 ? "false" : "true");
+  // 1. Renderiza a navegação superior
+  function buildNav() {
+    navContainer.innerHTML = "";
+    SLIDES_DATA.forEach((mod, idx) => {
+      const btn = document.createElement("button");
+      btn.className = idx === currentModuleIndex ? "nav-pill active" : "nav-pill";
+      btn.textContent = mod.shortTitle;
+      btn.onclick = () => selectModule(idx);
+      navContainer.appendChild(btn);
+    });
+  }
 
-    el.innerHTML = `
-      <header class="slide__header">
-        <div>
-          <div class="slide__eyebrow">${slide.eyebrow}</div>
-          <h2 class="slide__title">${slide.title}<small>${slide.subtitle}</small></h2>
+  // 2. Monta o slide atual
+  function selectModule(idx) {
+    currentModuleIndex = (idx + SLIDES_DATA.length) % SLIDES_DATA.length;
+    const mod = SLIDES_DATA[currentModuleIndex];
+
+    buildNav();
+
+    const cardsHtml = mod.cards.map((card, cIdx) => `
+      <article class="card-anim">
+        <header class="card-anim__header">
+          <span class="card-anim__tag">${card.tag}</span>
+          <span class="card-anim__num">FIG 0${mod.id}.${cIdx + 1}</span>
+        </header>
+        <h3 class="card-anim__title">${card.title}</h3>
+        <div class="card-anim__viewport">
+          <svg id="${card.id}" viewBox="0 0 480 300"></svg>
+          <div class="card-anim__progress">
+            <div class="card-anim__progress-fill" id="prog_${card.id}"></div>
+          </div>
         </div>
-        <div class="badge-presenter" data-level="${slide.presenter.level}">
-          <span class="badge-presenter__dot"></span>
-          ${slide.presenter.name} · ${slide.presenter.role}
-        </div>
-      </header>
+        <p class="card-anim__caption">${card.caption}</p>
+      </article>
+    `).join("");
 
-      <div class="slide__body">${ModuleViews.render(slide)}</div>
-
+    const notesHtml = `
       <div class="presenter-notes">
         <div class="presenter-notes__title">🎤 Cola do Apresentador</div>
-        <ul>${slide.notes.map(n => `<li>${n}</li>`).join("")}</ul>
+        <ul>${mod.notes.map(n => `<li>${n}</li>`).join("")}</ul>
       </div>
     `;
-    return el;
+
+    stage.innerHTML = `
+      <section class="slide slide--active">
+        <header class="slide__header">
+          <div>
+            <div class="slide__eyebrow">MÓDULO 0${mod.id} / 06 · ${mod.shortTitle}</div>
+            <h2 class="slide__title">${mod.title}<small>${mod.subtitle}</small></h2>
+          </div>
+          <div class="badge-presenter">${mod.speakers}</div>
+        </header>
+        <div class="focus-panel">${mod.subtitle}</div>
+        <div class="cards-grid">${cardsHtml}</div>
+        ${notesHtml}
+      </section>
+    `;
+
+    restartCycle();
   }
 
-  function renderAll() {
-    SLIDES_DATA.forEach((s, i) => {
-      stage.appendChild(buildSlide(s, i));
-      const dot = document.createElement("button");
-      dot.className = "dot" + (i === 0 ? " dot--active" : "");
-      dot.setAttribute("role", "tab");
-      dot.setAttribute("aria-label", `Módulo ${i + 1}`);
-      dot.addEventListener("click", () => goTo(i));
-      dotsNav.appendChild(dot);
-    });
+  // 3. Controle de animação
+  function restartCycle() {
+    cycleStartTime = performance.now();
+    pausedElapsed = 0;
+    if (!isPlaying) togglePlay(); // Se estava pausado, retoma
+    renderFrame(0);
   }
 
-  // ---------- MOUNT DINÂMICO ----------
-  function mountComponentsFor(slideId) {
-    if (slideId === "m1") {
-      const mount = document.getElementById("timelineMount");
-      if (mount && window.TimelineAnimator) {
-        const data = SLIDES_DATA.find(s => s.id === "m1").content.timeline;
-        window.TimelineAnimator.mount(mount, data);
-      }
-    }
-    if (slideId === "m2") {
-      const mount = document.getElementById("reactionMount");
-      if (mount && window.ReactionAnimator) {
-        window.ReactionAnimator.mount(mount);
-      }
-    }
-    if (slideId === "m3") {
-      const mount = document.getElementById("deformationMount");
-      if (mount && window.DeformationAnimator) {
-        window.DeformationAnimator.mount(mount);
-      }
-    }
-    if (slideId === "m5") {
-      const mount = document.getElementById("sectionComparatorMount");
-      if (mount && window.SectionComparator) window.SectionComparator.mount(mount);
-    }
-    if (slideId === "m6") {
-      const mount = document.getElementById("beamSimulatorMount");
-      if (mount && window.BeamSimulator) window.BeamSimulator.mount(mount);
-    }
-    if (window.KatexLoader) window.KatexLoader.refresh();
-  }
-
-  // ---------- NAV ----------
-  function goTo(index) {
-    if (index < 0 || index >= total) return;
-    const slides = stage.querySelectorAll(".slide");
-    slides.forEach((s, i) => {
-      const active = i === index;
-      s.classList.toggle("slide--active", active);
-      s.setAttribute("aria-hidden", active ? "false" : "true");
-    });
-    dotsNav.querySelectorAll(".dot").forEach((d, i) => {
-      d.classList.toggle("dot--active", i === index);
-    });
-    current = index;
-    updateProgress();
-    mountComponentsFor(SLIDES_DATA[index].id);
-    if (document.body.classList.contains("explorer")) {
-      slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  function togglePlay() {
+    if (isPlaying) {
+      isPlaying = false;
+      pausedElapsed = (performance.now() - cycleStartTime) % LOOP_DURATION;
+      playIcon.textContent = "▶";
+      playLabel.textContent = "CONTINUAR";
+      btnPlayPause.classList.add("is-paused");
     } else {
-      stage.scrollTop = 0;
+      isPlaying = true;
+      cycleStartTime = performance.now() - pausedElapsed;
+      playIcon.textContent = "⏸";
+      playLabel.textContent = "PAUSAR";
+      btnPlayPause.classList.remove("is-paused");
     }
   }
 
-  function updateProgress() {
-    const pct = ((current + 1) / total) * 100;
-    progressFill.style.width = pct + "%";
-    progressLabel.textContent = `${current + 1} / ${total}`;
-    btnPrev.disabled = current === 0;
-    btnNext.disabled = current === total - 1;
+  // 4. Loop 60fps
+  function animationLoop(now) {
+    let elapsed = isPlaying ? (now - cycleStartTime) % LOOP_DURATION : pausedElapsed;
+    const t = elapsed / LOOP_DURATION;
+
+    cycleTimerEl.textContent = (elapsed / 1000).toFixed(1) + "s";
+    renderFrame(t);
+
+    requestAnimationFrame(animationLoop);
   }
 
-  // ---------- EVENTOS ----------
-  btnPrev.addEventListener("click", () => goTo(current - 1));
-  btnNext.addEventListener("click", () => goTo(current + 1));
+  // 5. Dispara o render para cada card
+  function renderFrame(t) {
+    const mod = SLIDES_DATA[currentModuleIndex];
+    mod.cards.forEach((card) => {
+      const svg = document.getElementById(card.id);
+      const prog = document.getElementById(`prog_${card.id}`);
+      if (prog) prog.style.width = `${(t * 100).toFixed(1)}%`;
+      if (svg && window[card.render]) {
+        window[card.render](svg, t);
+      }
+    });
+  }
 
-  document.addEventListener("keydown", e => {
+  // 6. Eventos
+  btnPrev.onclick = () => selectModule(currentModuleIndex - 1);
+  btnNext.onclick = () => selectModule(currentModuleIndex + 1);
+  btnPlayPause.onclick = togglePlay;
+  btnRestart.onclick = restartCycle;
+  btnPresenter.onclick = () => {
+    document.body.classList.toggle("presenter-mode");
+    btnPresenter.classList.toggle("active");
+  };
+
+  window.addEventListener("keydown", (e) => {
     if (e.target.matches("input, textarea, select")) return;
-    switch (e.key) {
-      case "ArrowRight": case "PageDown":
-        e.preventDefault(); goTo(current + 1); break;
-      case "ArrowLeft": case "PageUp":
-        e.preventDefault(); goTo(current - 1); break;
-      case "f": case "F": toggleFullscreen(); break;
-      case "n": case "N": togglePresenter(); break;
-      case "Home": goTo(0); break;
-      case "End": goTo(total - 1); break;
+    if (e.key === "ArrowRight") selectModule(currentModuleIndex + 1);
+    else if (e.key === "ArrowLeft") selectModule(currentModuleIndex - 1);
+    else if (e.key === " ") { e.preventDefault(); togglePlay(); }
+    else if (e.key.toLowerCase() === "r") restartCycle();
+    else if (e.key.toLowerCase() === "n") {
+      document.body.classList.toggle("presenter-mode");
+      btnPresenter.classList.toggle("active");
     }
   });
 
-  btnFullscreen.addEventListener("click", toggleFullscreen);
-  btnPresenter.addEventListener("click", togglePresenter);
-  btnExplorer.addEventListener("click", toggleExplorer);
-
-  function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => {});
-    } else {
-      document.exitFullscreen?.();
-    }
-  }
-  function togglePresenter() {
-    document.body.classList.toggle("presenter-mode");
-    btnPresenter.classList.toggle("btn--active",
-      document.body.classList.contains("presenter-mode"));
-  }
-  function toggleExplorer() {
-    document.body.classList.toggle("explorer");
-    const on = document.body.classList.contains("explorer");
-    btnExplorer.classList.toggle("btn--active", on);
-    if (on) {
-      stage.querySelectorAll(".slide").forEach(s => {
-        s.classList.add("slide--active");
-        s.setAttribute("aria-hidden", "false");
-      });
-    } else {
-      goTo(current);
-    }
-  }
-
-  // ---------- BOOT ----------
-  renderAll();
-  if (window.KatexLoader) window.KatexLoader.init();
-  goTo(0);
+  // 7. Boot
+  selectModule(0);
+  requestAnimationFrame(animationLoop);
 })();

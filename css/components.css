@@ -1,184 +1,73 @@
-/* =========================================================
-   components.css — Componentes do Slide e Grade de 3 Cards
-   ========================================================= */
+/* components.css — layout: uma animação por tela, texto mínimo */
 
-.slide__header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 16px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid var(--border);
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--top);
+  display: flex; align-items: center; gap: 16px; padding: 0 20px;
+  background: #fff; border-bottom: 3px solid var(--ink); z-index: 20;
 }
+.brand { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+.brand-logo {
+  background: var(--blue); color: #fff; font-family: var(--font-mono); font-weight: 700;
+  font-size: var(--fs-18); padding: 6px 10px; border-radius: 8px;
+}
+.brand-name { font-weight: 800; font-size: var(--fs-20); color: var(--ink); }
 
-.slide__eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--fs-sm);
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  font-weight: 700;
-  margin-bottom: 6px;
+.module-nav { flex: 1; display: flex; gap: 6px; justify-content: center; }
+.pill {
+  font: 700 var(--fs-16)/1 var(--font-sans); color: var(--ink); background: #fff;
+  border: 2px solid var(--border); border-radius: 8px; padding: 10px 14px; cursor: pointer; white-space: nowrap;
 }
+.pill:hover { border-color: var(--blue); }
+.pill.active { background: var(--blue); border-color: var(--blue); color: #fff; }
 
-.slide__title {
-  font-size: var(--fs-2xl);
-  line-height: 1.1;
-  color: var(--txt-1);
+.controls { display: flex; gap: 6px; }
+.ctrl {
+  font: 700 var(--fs-16)/1 var(--font-sans); color: var(--ink); background: #fff;
+  border: 2px solid var(--border); border-radius: 8px; padding: 10px 14px; cursor: pointer;
 }
-.slide__title small {
-  display: block;
-  font-size: var(--fs-md);
-  color: var(--txt-3);
-  font-weight: 500;
-  margin-top: 8px;
-}
+.ctrl:hover { border-color: var(--blue); }
+.ctrl--play { color: var(--green); border-color: var(--green); }
+.ctrl--play.on { background: var(--green); color: #fff; }
 
-.badge-presenter {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--bg-muted);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  font-size: var(--fs-sm);
-  color: var(--txt-2);
-  font-weight: 600;
-  white-space: nowrap;
-}
+.stage { position: absolute; inset: var(--top) 0 var(--foot) 0; overflow: hidden; }
+.screen { height: 100%; display: flex; flex-direction: column; padding: 14px 28px 8px; }
+.screen__head { flex: none; }
+.screen__eyebrow { font: 700 var(--fs-18)/1.2 var(--font-mono); color: var(--blue); letter-spacing: .06em; text-transform: uppercase; }
+.screen__title { font-size: var(--fs-title); line-height: 1.08; font-weight: 800; color: var(--ink); margin-top: 2px; }
+.screen__line { font-size: var(--fs-line); font-weight: 600; color: var(--muted); margin-top: 6px; }
 
-/* PAINEL DE FOCO */
-.focus-panel {
-  background: var(--bg-card);
-  border: 2px solid var(--border);
-  border-left: 6px solid var(--accent);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  font-size: var(--fs-md);
-  color: var(--txt-2);
-  box-shadow: 0 2px 8px rgba(0,0,0,.04);
-}
+.viz { flex: 1; min-height: 0; margin-top: 8px; position: relative; border: 3px solid var(--ink); border-radius: 14px; background: #fff; overflow: hidden; }
+.viz svg { width: 100%; height: 100%; display: block; }
+.viz__bar { position: absolute; left: 0; bottom: 0; height: 5px; width: 0; background: var(--blue); }
 
-/* GRADE DE 3 CARDS */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  min-height: 560px;
+.photo { height: 100%; display: flex; align-items: center; justify-content: center; padding: 10px; }
+.photo img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
+.photo__empty {
+  border: 3px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center;
+  font-size: var(--fs-line); color: var(--muted); font-weight: 600; max-width: 80%;
 }
+.photo__empty code { font-family: var(--font-mono); color: var(--ink); }
 
-@media (max-width: 1200px) {
-  .cards-grid { grid-template-columns: 1fr; min-height: auto; }
+.footer {
+  position: fixed; bottom: 0; left: 0; right: 0; height: var(--foot);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  background: #fff; border-top: 3px solid var(--ink); font-size: var(--fs-16); color: var(--muted); z-index: 20;
 }
+.counter { font: 700 var(--fs-18) var(--font-mono); color: var(--ink); }
 
-.card-anim {
-  background: var(--bg-card);
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: border-color var(--transition), transform var(--transition);
-  box-shadow: 0 4px 12px rgba(0,0,0,.04);
-}
-.card-anim:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-}
+/* Janela do apresentador (nunca aparece para a plateia) */
+body.presenter .topbar, body.presenter .footer { display: none; }
+body.presenter .stage { inset: 0; overflow: auto; }
+.pres { padding: 24px 32px; max-width: 1100px; margin: 0 auto; }
+.pres__who { font: 700 var(--fs-18) var(--font-mono); color: var(--blue); text-transform: uppercase; }
+.pres__title { font-size: 40px; font-weight: 800; color: var(--ink); margin: 4px 0 12px; line-height: 1.1; }
+.pres__notes { font-size: 26px; line-height: 1.45; padding-left: 28px; margin: 0 0 20px; color: var(--ink); }
+.pres__notes li { margin-bottom: 10px; }
+.pres__next { font-size: var(--fs-20); color: var(--muted); border-top: 2px solid var(--border); padding-top: 14px; }
+.pres__bar { display: flex; gap: 12px; align-items: center; margin-top: 18px; }
+.pres__clock { font: 800 34px var(--font-mono); color: var(--ink); margin-left: auto; }
 
-.card-anim__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-}
-.card-anim__tag {
-  font-family: var(--font-mono);
-  font-size: var(--fs-sm);
-  color: var(--accent);
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-.card-anim__num {
-  font-family: var(--font-mono);
-  font-size: var(--fs-sm);
-  color: var(--txt-3);
-}
-
-.card-anim__title {
-  font-size: var(--fs-lg);
-  line-height: 1.25;
-  color: var(--txt-1);
-  font-weight: 700;
-}
-
-.card-anim__viewport {
-  background: var(--bg-main);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  aspect-ratio: 16/10;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-.card-anim__viewport svg { width: 100%; height: 100%; display: block; }
-
-.card-anim__progress {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 4px;
-  background: rgba(0,0,0,.05);
-}
-.card-anim__progress-fill {
-  height: 100%;
-  width: 0;
-  background: var(--accent);
-  transition: width 80ms linear;
-}
-
-.card-anim__caption {
-  font-size: var(--fs-sm);
-  color: var(--txt-2);
-  line-height: 1.55;
-  background: var(--bg-muted);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 8px 8px 0;
-  padding: 10px 14px;
-}
-
-/* NOTAS DO APRESENTADOR */
-.presenter-notes {
-  margin-top: 20px;
-  background: rgba(2,132,199,.05);
-  border: 2px dashed var(--accent);
-  border-radius: 12px;
-  padding: 16px;
-  display: none;
-}
-body.presenter-mode .presenter-notes { display: block; animation: fadeIn 250ms ease; }
-.presenter-notes__title {
-  font-family: var(--font-mono);
-  font-size: var(--fs-sm);
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  margin-bottom: 8px;
-  font-weight: 700;
-}
-.presenter-notes ul {
-  padding-left: 1.4em;
-  margin: 0;
-  color: var(--txt-2);
-  font-size: var(--fs-md);
-}
-.presenter-notes li { margin-bottom: 6px; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: none; }
+@media (max-width: 1100px) {
+  .brand-name { display: none; }
+  .pill { padding: 8px 10px; }
 }

@@ -1,7 +1,9 @@
 /* =========================================================
    engine.js — Motor de renderização SVG + Helpers
+   (Animações originais do Gemini adaptadas para o nosso fluxo)
    ========================================================= */
 
+// Helpers de Easing
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 function pulseWave(t) { return 0.5 - 0.5 * Math.cos(t * Math.PI * 2); }
 function holdWave(t) {
@@ -11,6 +13,7 @@ function holdWave(t) {
   return 0;
 }
 
+// Helpers SVG
 function arrowLine(x1, y1, x2, y2, color, width = 2.5, headSize = 7) {
   const angle = Math.atan2(y2 - y1, x2 - x1);
   const ax1 = x2 - headSize * Math.cos(angle - Math.PI / 6);
@@ -68,8 +71,8 @@ function renderM1C1(svg, t) {
     ${pinSupport(x0, y0 + h)}
     ${rollerSupport(x1, y0 + h)}
     ${arrowLine(xm, forceY, xm, y0 + bend - h - 4, "#DC2626", 3.2, 9)}
-    <rect x="${xm - 54}" y="${forceY - 26}" width="108" height="20" rx="4" fill="#F1F5F9" stroke="#DC2626" stroke-width="1"/>
-    <text x="${xm}" y="${forceY - 12}" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">F = ${forceVal} kN (ilust.)</text>
+    <rect x="${xm - 48}" y="${forceY - 26}" width="96" height="20" rx="4" fill="#F1F5F9" stroke="#DC2626" stroke-width="1"/>
+    <text x="${xm}" y="${forceY - 12}" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">F = ${forceVal} kN</text>
     ${w > 0.08 ? `
       <line x1="${xm + 16}" y1="${y0}" x2="${xm + 16}" y2="${y0 + bend}" stroke="#CA8A04" stroke-width="1.5"/>
       <line x1="${xm + 11}" y1="${y0}" x2="${xm + 21}" y2="${y0}" stroke="#CA8A04" stroke-width="1.5"/>
@@ -78,11 +81,11 @@ function renderM1C1(svg, t) {
     ` : ""}
     ${w > 0.05 ? `
       ${arrowLine(x0, y0 + 68, x0, y0 + 42, "#16A34A", 2.4, 7)}
-      <text x="${x0}" y="${y0 + 82}" fill="#16A34A" font-size="10" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R1=${(w * 6).toFixed(1)} kN</text>
+      <text x="${x0}" y="${y0 + 82}" fill="#16A34A" font-size="10" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R1=${(w * 6).toFixed(1)}kN</text>
       ${arrowLine(x1, y0 + 68, x1, y0 + 42, "#16A34A", 2.4, 7)}
-      <text x="${x1}" y="${y0 + 82}" fill="#16A34A" font-size="10" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R2=${(w * 6).toFixed(1)} kN</text>
+      <text x="${x1}" y="${y0 + 82}" fill="#16A34A" font-size="10" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R2=${(w * 6).toFixed(1)}kN</text>
     ` : ""}
-    <text x="240" y="282" fill="#475569" font-size="11" font-family="Inter" text-anchor="middle">Carga Transversal → Momento Fletor → Linha Elástica</text>
+    <text x="240" y="282" fill="#475569" font-size="11" font-family="Inter" text-anchor="middle">Carga Transversal → Momento Fletor → Curvatura Elástica</text>
   `;
 }
 
@@ -106,7 +109,7 @@ function renderM1C2(svg, t) {
     <g opacity="${0.4 + 0.6 * Math.min(1, t * 1.4)}">
       ${arrowLine(25, 115, 75, 125, "#0284C7", 2, 6)}
       ${arrowLine(20, 145, 70, 155, "#0284C7", 2, 6)}
-      <text x="22" y="102" fill="#0284C7" font-size="10" font-family="JetBrains Mono">VENTO</text>
+      <text x="22" y="102" fill="#0284C7" font-size="10" font-family="JetBrains Mono">VENTO / CARGA</text>
     </g>
     <rect x="125" y="75" width="10" height="155" fill="#94A3B8" stroke="#475569" stroke-width="1.5"/>
     <rect x="345" y="75" width="10" height="155" fill="#94A3B8" stroke="#475569" stroke-width="1.5"/>
@@ -116,12 +119,12 @@ function renderM1C2(svg, t) {
     ` : `
       <polyline points="${leftHalf}" fill="none" stroke="#DC2626" stroke-width="5" transform="rotate(14, 130, 165)"/>
       <polyline points="${rightHalf}" fill="none" stroke="#DC2626" stroke-width="5" transform="rotate(-14, 350, 165)"/>
-      <rect x="135" y="45" width="210" height="28" rx="6" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.5"/>
-      <text x="240" y="63" fill="#DC2626" font-size="10.5" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">COLAPSO / INSTABILIDADE AEROELÁSTICA</text>
+      <rect x="155" y="45" width="170" height="28" rx="6" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.5"/>
+      <text x="240" y="63" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">COLAPSO POR RESSONÂNCIA</text>
     `}
-    <rect x="140" y="242" width="200" height="24" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
+    <rect x="150" y="242" width="180" height="24" rx="5" fill="#F1F5F9" stroke="#CBD5E1"/>
     <text x="240" y="258" fill="${amp > 24 ? '#DC2626' : '#16A34A'}" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">
-      Oscilação (ilust.): ${broken ? "COLAPSO" : Math.round((amp / 42) * 100) + "%"}
+      Amplitude Flexão: ${broken ? "RUPTURA!" : Math.round((amp / 42) * 100) + "%"}
     </text>
   `;
 }
@@ -140,7 +143,7 @@ function renderM1C3(svg, t) {
       <rect x="56" y="110" width="110" height="75" fill="rgba(202,138,4,0.12)" stroke="#CA8A04" stroke-width="1.8"/>
       ${[120, 138, 156, 174].map(y => arrowLine(56, y, 56 + 26 + w * 14, y, "#DC2626", 2, 5)).join("")}
       <text x="115" y="206" fill="#CA8A04" font-size="10" font-family="JetBrains Mono" text-anchor="middle">Tensão Uniforme (Incorreto)</text>
-      <text x="115" y="220" fill="#64748B" font-size="9.5" text-anchor="middle">Sem linha neutra / compressão</text>
+      <text x="115" y="220" fill="#64748B" font-size="9.5" text-anchor="middle">Ignorava a Compressão</text>
     </g>
     <g opacity="${isEuler ? 1 : 0.35}">
       <rect x="272" y="75" width="14" height="145" fill="#CBD5E1" stroke="#94A3B8"/>
@@ -150,11 +153,11 @@ function renderM1C3(svg, t) {
       ${arrowLine(286, 132, 286 + 12 + w * 8, 132, "#DC2626", 1.8, 4)}
       ${arrowLine(286 + 12 + w * 8, 163, 286, 163, "#0284C7", 1.8, 4)}
       ${arrowLine(286 + 24 + w * 16, 177, 286, 177, "#0284C7", 2, 5)}
-      <text x="348" y="206" fill="#16A34A" font-size="10" font-family="JetBrains Mono" text-anchor="middle">Perfil Linear (σ = −My/I)</text>
-      <text x="348" y="220" fill="#64748B" font-size="9.5" text-anchor="middle">Seções planas + Linha Neutra</text>
+      <text x="348" y="206" fill="#16A34A" font-size="10" font-family="JetBrains Mono" text-anchor="middle">Perfil Linear (σ = -My/I)</text>
+      <text x="348" y="220" fill="#64748B" font-size="9.5" text-anchor="middle">Seções Planas + Tração/Comp.</text>
     </g>
     <text x="240" y="276" fill="#334155" font-size="11" text-anchor="middle">
-      ${!isEuler ? "Galileu supôs tensão uniforme na altura da seção" : "Euler-Bernoulli: seções planas permanecem planas após a flexão"}
+      ${!isEuler ? "Galileu supôs tração constante em toda a altura da seção" : "Euler-Bernoulli definiu a Linha Neutra e a variação linear"}
     </text>
   `;
 }
@@ -165,11 +168,11 @@ function renderM2C1(svg, t) {
   const dx = w * 32, angle = w * 10;
   svg.innerHTML = `
     <line x1="90" y1="215" x2="390" y2="215" stroke="#94A3B8" stroke-width="3"/>
-    <text x="240" y="236" fill="#64748B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">APOIO DE NEOPRENE / ROLETE</text>
+    <text x="240" y="236" fill="#64748B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">PILAR DE PONTE / APOIO DE NEOPRENE</text>
     <g transform="translate(${dx}, 0)">
       <g transform="rotate(${angle}, 190, 170)">
         <rect x="110" y="142" width="230" height="24" rx="4" fill="rgba(2,132,199,0.18)" stroke="#0284C7" stroke-width="2.2"/>
-        <text x="225" y="158" fill="#1E293B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">VIGA</text>
+        <text x="225" y="158" fill="#1E293B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">VIGA LONGARINA</text>
       </g>
       <polygon points="190,170 174,196 206,196" fill="rgba(2,132,199,0.2)" stroke="#0284C7" stroke-width="2"/>
       <circle cx="190" cy="170" r="4" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
@@ -179,7 +182,7 @@ function renderM2C1(svg, t) {
       <text x="202" y="258" fill="#16A34A" font-size="11" font-family="JetBrains Mono" font-weight="bold">Ry (Bloqueado)</text>
     </g>
     ${arrowLine(155, 115, 225, 115, "#CA8A04", 2.5, 7)}
-    <text x="190" y="105" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">Δx LIVRE</text>
+    <text x="190" y="105" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">Δx LIVRE (Dilatação)</text>
     <path d="M 275,130 A 35,35 0 0,1 285,165" fill="none" stroke="#CA8A04" stroke-width="2" stroke-dasharray="3,2"/>
     <text x="325" y="132" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold">θ LIVRE</text>
     <rect x="24" y="20" width="195" height="26" rx="5" fill="#F1F5F9" stroke="#16A34A"/>
@@ -195,7 +198,7 @@ function renderM2C2(svg, t) {
     ${pinSupport(180, 172, "#0284C7")}
     <g transform="rotate(${angle}, 180, 172)">
       <rect x="165" y="146" width="245" height="24" rx="4" fill="rgba(2,132,199,0.18)" stroke="#0284C7" stroke-width="2.2"/>
-      <text x="290" y="162" fill="#1E293B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">ELEMENTO ARTICULADO</text>
+      <text x="290" y="162" fill="#1E293B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">PORTÃO / VIGA ARTICULADA</text>
       ${arrowLine(375, 85, 345, 142, "#DC2626", 3, 8)}
       <text x="382" y="78" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">F Inclinada</text>
     </g>
@@ -206,7 +209,7 @@ function renderM2C2(svg, t) {
     <path d="M 245,132 A 45,45 0 0,1 255,178" fill="none" stroke="#CA8A04" stroke-width="2.2"/>
     <text x="268" y="128" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold">θ LIVRE (M = 0)</text>
     <rect x="24" y="20" width="210" height="26" rx="5" fill="#F1F5F9" stroke="#16A34A"/>
-    <text x="129" y="37" fill="#16A34A" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">2 REAÇÕES: Rx e Ry</text>
+    <text x="129" y="37" fill="#16A34A" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">2 REAÇÕES: Rx ≠ 0 e Ry ≠ 0</text>
   `;
 }
 
@@ -227,20 +230,20 @@ function renderM2C3(svg, t) {
     <text x="87" y="90" fill="#475569" font-size="10" font-family="JetBrains Mono" text-anchor="middle">PILAR /</text>
     <text x="87" y="103" fill="#475569" font-size="10" font-family="JetBrains Mono" text-anchor="middle">PAREDE</text>
     <polygon points="${topPts.concat(botPts).join(" ")}" fill="rgba(2,132,199,0.18)" stroke="#0284C7" stroke-width="2.2"/>
-    <text x="235" y="${y0 + tipDrop * 0.35 + 4}" fill="#1E293B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">BALANÇO</text>
+    <text x="235" y="${y0 + tipDrop * 0.35 + 4}" fill="#1E293B" font-size="10.5" font-family="JetBrains Mono" text-anchor="middle">MARQUISE / BALANÇO</text>
     ${arrowLine(375, 65 + tipDrop, 375, y0 + tipDrop - h - 4, "#DC2626", 3.2, 8)}
     <text x="375" y="${56 + tipDrop}" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">F (Ponta)</text>
     ${w > 0.05 ? `
       ${arrowLine(108, 225, 108, 175, "#16A34A", 2.8, 7)}
       <text x="95" y="218" fill="#16A34A" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="end">Ry</text>
       ${arrowLine(22, 148, 52, 148, "#16A34A", 2.8, 7)}
-      <text x="35" y="138" fill="#16A34A" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">Rx (0 se F_x=0)</text>
+      <text x="35" y="138" fill="#16A34A" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">Rx</text>
       <path d="M 142,115 A 34,34 0 0,0 142,182" fill="none" stroke="#CA8A04" stroke-width="3"/>
       <polygon points="142,115 135,124 148,123" fill="#CA8A04"/>
       <text x="165" y="106" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold">M Reativo (θ = 0)</text>
     ` : ""}
     <rect x="230" y="20" width="225" height="26" rx="5" fill="#F1F5F9" stroke="#CA8A04"/>
-    <text x="342" y="37" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">3 REAÇÕES: Rx, Ry e M</text>
+    <text x="342" y="37" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">3 REAÇÕES: Rx, Ry e Momento M</text>
   `;
 }
 
@@ -249,8 +252,7 @@ function renderM3C1(svg, t) {
   const isDist = t >= 0.5;
   const localT = isDist ? (t - 0.5) / 0.5 : t / 0.5;
   const w = Math.sin(localT * Math.PI);
-  // Na viga biapoiada com mesma resultante F = q*L: delta_pontual = (5/8) * delta_distribuida
-  const maxDeflect = isDist ? 24 : 38.4;
+  const maxDeflect = isDist ? 24 : 38;
   const bend = w * maxDeflect;
   const x0 = 80, x1 = 400, y0 = 165, h = 11;
   let topPts = [], botPts = [];
@@ -273,26 +275,26 @@ function renderM3C1(svg, t) {
   }
   svg.innerHTML = `
     <rect x="24" y="18" width="205" height="26" rx="5" fill="${!isDist ? 'rgba(220,38,38,0.18)' : '#F1F5F9'}" stroke="${!isDist ? '#DC2626' : '#CBD5E1'}"/>
-    <text x="126" y="35" fill="${!isDist ? '#DC2626' : '#94A3B8'}" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">PONTUAL (F = 10 kN)</text>
+    <text x="126" y="35" fill="${!isDist ? '#DC2626' : '#94A3B8'}" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">CARGA PONTUAL (F = 10kN)</text>
     <rect x="251" y="18" width="205" height="26" rx="5" fill="${isDist ? 'rgba(220,38,38,0.18)' : '#F1F5F9'}" stroke="${isDist ? '#DC2626' : '#CBD5E1'}"/>
-    <text x="353" y="35" fill="${isDist ? '#DC2626' : '#94A3B8'}" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">DISTRIBUÍDA (q = 2,5 kN/m)</text>
+    <text x="353" y="35" fill="${isDist ? '#DC2626' : '#94A3B8'}" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">DISTRIBUÍDA (q = 2.5kN/m)</text>
     ${!isDist ? `
       ${arrowLine(240, 72, 240, y0 + bend - h - 4, "#DC2626", 3.5, 9)}
       <text x="240" y="64" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">F = 10 kN (Concentrada)</text>
     ` : `
       ${distArrows}
-      <text x="240" y="72" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">q = 2,5 kN/m × 4 m = 10 kN</text>
+      <text x="240" y="72" fill="#DC2626" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">q = 2.5 kN/m × 4m = 10 kN</text>
     `}
     <polygon points="${topPts.concat(botPts).join(" ")}" fill="rgba(2,132,199,0.18)" stroke="#0284C7" stroke-width="2"/>
     ${pinSupport(x0, y0 + h)}
     ${rollerSupport(x1, y0 + h)}
     ${arrowLine(x0, y0 + 66, x0, y0 + 40, "#16A34A", 2.4, 7)}
-    <text x="${x0}" y="${y0 + 80}" fill="#16A34A" font-size="10.5" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R1 = 5,0 kN</text>
+    <text x="${x0}" y="${y0 + 80}" fill="#16A34A" font-size="10.5" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R1 = 5.0 kN</text>
     ${arrowLine(x1, y0 + 66, x1, y0 + 40, "#16A34A", 2.4, 7)}
-    <text x="${x1}" y="${y0 + 80}" fill="#16A34A" font-size="10.5" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R2 = 5,0 kN</text>
-    <rect x="135" y="246" width="210" height="26" rx="5" fill="#F1F5F9" stroke="#CA8A04"/>
+    <text x="${x1}" y="${y0 + 80}" fill="#16A34A" font-size="10.5" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">R2 = 5.0 kN</text>
+    <rect x="145" y="246" width="190" height="26" rx="5" fill="#F1F5F9" stroke="#CA8A04"/>
     <text x="240" y="263" fill="#CA8A04" font-size="11" font-family="JetBrains Mono" font-weight="bold" text-anchor="middle">
-      Flecha (ilust.) δ = ${(bend * 0.45).toFixed(1)} mm
+      Flecha Máx δ = ${(bend * 0.45).toFixed(1)} mm
     </text>
   `;
 }
@@ -303,9 +305,7 @@ function renderM3C2(svg, t) {
   else if (t < 0.4) stage = 1;
   else if (t < 0.65) stage = 2;
   else if (t < 0.85) stage = 3;
-  else stage = 0;
-
-  const mass = stage * 200; // g (ilustrativo)
+  const mass = stage * 200;
   const delta = stage * 11;
   const deltaMM = (stage * 4.2).toFixed(1);
   const x0 = 85, x1 = 395, xm = 240, y0 = 152, h = 8;
@@ -314,4 +314,4 @@ function renderM3C2(svg, t) {
     const s = i / 28;
     const x = x0 + (x1 - x0) * s;
     const dy = delta * Math.sin(Math.PI * s);
-    topPts.push(`
+    topPts.push(`${x.toFi

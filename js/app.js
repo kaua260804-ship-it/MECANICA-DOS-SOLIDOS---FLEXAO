@@ -1,5 +1,5 @@
 /* =========================================================
-   app.js — Controlador Principal
+   app.js — Controlador (v2 — atalhos estendidos)
    ========================================================= */
 
 (() => {
@@ -20,9 +20,8 @@
   let isPlaying = true;
   let cycleStartTime = performance.now();
   let pausedElapsed = 0;
-  const LOOP_DURATION = 5000; // 5.0s
+  const LOOP_DURATION = 5000;
 
-  // 1. Renderiza a navegação superior
   function buildNav() {
     navContainer.innerHTML = "";
     SLIDES_DATA.forEach((mod, idx) => {
@@ -34,11 +33,9 @@
     });
   }
 
-  // 2. Monta o slide atual
   function selectModule(idx) {
     currentModuleIndex = (idx + SLIDES_DATA.length) % SLIDES_DATA.length;
     const mod = SLIDES_DATA[currentModuleIndex];
-
     buildNav();
 
     const cardsHtml = mod.cards.map((card, cIdx) => `
@@ -49,7 +46,7 @@
         </header>
         <h3 class="card-anim__title">${card.title}</h3>
         <div class="card-anim__viewport">
-          <svg id="${card.id}" viewBox="0 0 480 300"></svg>
+          <svg id="${card.id}" viewBox="0 0 400 250"></svg>
           <div class="card-anim__progress">
             <div class="card-anim__progress-fill" id="prog_${card.id}"></div>
           </div>
@@ -83,11 +80,10 @@
     restartCycle();
   }
 
-  // 3. Controle de animação
   function restartCycle() {
     cycleStartTime = performance.now();
     pausedElapsed = 0;
-    if (!isPlaying) togglePlay(); // Se estava pausado, retoma
+    if (!isPlaying) togglePlay();
     renderFrame(0);
   }
 
@@ -107,31 +103,24 @@
     }
   }
 
-  // 4. Loop 60fps
   function animationLoop(now) {
     let elapsed = isPlaying ? (now - cycleStartTime) % LOOP_DURATION : pausedElapsed;
     const t = elapsed / LOOP_DURATION;
-
     cycleTimerEl.textContent = (elapsed / 1000).toFixed(1) + "s";
     renderFrame(t);
-
     requestAnimationFrame(animationLoop);
   }
 
-  // 5. Dispara o render para cada card
   function renderFrame(t) {
     const mod = SLIDES_DATA[currentModuleIndex];
     mod.cards.forEach((card) => {
       const svg = document.getElementById(card.id);
       const prog = document.getElementById(`prog_${card.id}`);
       if (prog) prog.style.width = `${(t * 100).toFixed(1)}%`;
-      if (svg && window[card.render]) {
-        window[card.render](svg, t);
-      }
+      if (svg && window[card.render]) window[card.render](svg, t);
     });
   }
 
-  // 6. Eventos
   btnPrev.onclick = () => selectModule(currentModuleIndex - 1);
   btnNext.onclick = () => selectModule(currentModuleIndex + 1);
   btnPlayPause.onclick = togglePlay;
@@ -143,8 +132,9 @@
 
   window.addEventListener("keydown", (e) => {
     if (e.target.matches("input, textarea, select")) return;
-    if (e.key === "ArrowRight") selectModule(currentModuleIndex + 1);
-    else if (e.key === "ArrowLeft") selectModule(currentModuleIndex - 1);
+    // Setas + PageUp/PageDown (compatível com controle remoto de apresentação)
+    if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); selectModule(currentModuleIndex + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); selectModule(currentModuleIndex - 1); }
     else if (e.key === " ") { e.preventDefault(); togglePlay(); }
     else if (e.key.toLowerCase() === "r") restartCycle();
     else if (e.key.toLowerCase() === "n") {
@@ -153,7 +143,6 @@
     }
   });
 
-  // 7. Boot
   selectModule(0);
   requestAnimationFrame(animationLoop);
 })();

@@ -1,159 +1,143 @@
 /* =========================================================
-   app.js — Controlador Principal
+   app.js — navegação por telas (1 animação por tela).
+   Começa PAUSADO no quadro-chave; Espaço anima; R reinicia.
+   Janela do apresentador (N) mostra as notas só para quem fala.
    ========================================================= */
-
 (() => {
   "use strict";
+  const $ = id => document.getElementById(id);
+  const stage = $("stage"), nav = $("moduleNav"), counter = $("counter");
+  const btnPlay = $("btnPlay");
+  const LOOP = 6000;
+  const isPresenter = /[?&]presenter/.test(location.search);
+  const modOf = s => MODULES.find(m => m.id === s.mod);
 
-  const stage = document.getElementById("stage");
-  const navContainer = document.getElementById("moduleNav");
-  const btnPrev = document.getElementById("btnPrev");
-  const btnNext = document.getElementById("btnNext");
-  const btnPlayPause = document.getElementById("btnPlayPause");
-  const btnRestart = document.getElementById("btnRestart");
-  const btnPresenter = document.getElementById("btnPresenter");
-  const playIcon = document.getElementById("playIcon");
-  const playLabel = document.getElementById("playLabel");
-  const cycleTimerEl = document.getElementById("cycleTimer");
+  let idx = 0, playing = false, t0 = 0, dirty = true, popup = null;
 
-  let currentModuleIndex = 0;
-  let isPlaying = true;
-  let cycleStartTime = performance.now();
-  let pausedElapsed = 0;
-  const LOOP_DURATION = 5000; // 5.0s
-
-  // 1. Renderiza a navegação superior
+  /* ---------- tela ---------- */
   function buildNav() {
-    navContainer.innerHTML = "";
-    SLIDES_DATA.forEach((mod, idx) => {
-      const btn = document.createElement("button");
-      btn.className = idx === currentModuleIndex ? "nav-pill active" : "nav-pill";
-      btn.textContent = mod.shortTitle;
-      btn.onclick = () => selectModule(idx);
-      navContainer.appendChild(btn);
+    nav.innerHTML = "";
+    MODULES.forEach(m => {
+      const b = document.createElement("button");
+      b.className = "pill" + (m.id === SCREENS[idx].mod ? " active" : "");
+      b.textContent = m.nav;
+      b.onclick = () => go(SCREENS.findIndex(s => s.mod === m.id));
+      nav.appendChild(b);
     });
   }
 
-  // 2. Monta o slide atual
-  function selectModule(idx) {
-    currentModuleIndex = (idx + SLIDES_DATA.length) % SLIDES_DATA.length;
-    const mod = SLIDES_DATA[currentModuleIndex];
-
-    buildNav();
-
-    const cardsHtml = mod.cards.map((card, cIdx) => `
-      <article class="card-anim">
-        <header class="card-anim__header">
-          <span class="card-anim__tag">${card.tag}</span>
-          <span class="card-anim__num">FIG 0${mod.id}.${cIdx + 1}</span>
-        </header>
-        <h3 class="card-anim__title">${card.title}</h3>
-        <div class="card-anim__viewport">
-          <svg id="${card.id}" viewBox="0 0 480 300"></svg>
-          <div class="card-anim__progress">
-            <div class="card-anim__progress-fill" id="prog_${card.id}"></div>
-          </div>
-        </div>
-        <p class="card-anim__caption">${card.caption}</p>
-      </article>
-    `).join("");
-
-    const notesHtml = `
-      <div class="presenter-notes">
-        <div class="presenter-notes__title">🎤 Cola do Apresentador</div>
-        <ul>${mod.notes.map(n => `<li>${n}</li>`).join("")}</ul>
-      </div>
-    `;
-
-    stage.innerHTML = `
-      <section class="slide slide--active">
-        <header class="slide__header">
-          <div>
-            <div class="slide__eyebrow">MÓDULO 0${mod.id} / 06 · ${mod.shortTitle}</div>
-            <h2 class="slide__title">${mod.title}<small>${mod.subtitle}</small></h2>
-          </div>
-          <div class="badge-presenter">${mod.speakers}</div>
-        </header>
-        <div class="focus-panel">${mod.subtitle}</div>
-        <div class="cards-grid">${cardsHtml}</div>
-        ${notesHtml}
-      </section>
-    `;
-
-    restartCycle();
-  }
-
-  // 3. Controle de animação
-  function restartCycle() {
-    cycleStartTime = performance.now();
-    pausedElapsed = 0;
-    if (!isPlaying) togglePlay(); // Se estava pausado, retoma
-    renderFrame(0);
-  }
-
-  function togglePlay() {
-    if (isPlaying) {
-      isPlaying = false;
-      pausedElapsed = (performance.now() - cycleStartTime) % LOOP_DURATION;
-      playIcon.textContent = "▶";
-      playLabel.textContent = "CONTINUAR";
-      btnPlayPause.classList.add("is-paused");
+  function show(i) {
+    idx = (i + SCREENS.length) % SCREENS.length;
+    const s = SCREENS[idx], m = modOf(s);
+    playing = false; dirty = true;
+    if (btnPlay) { btnPlay.textContent = "▶ Animar"; btnPlay.classList.remove("on"); }
+    let body;
+    if (s.photo) {
+      body = `<div class="photo"><img id="photoImg" src="${s.photo}" alt="${s.title}">
+        <div class="photo__empty" id="photoEmpty" style="display:none">Coloque a foto em <code>${s.photo}</code><br>(aparelho de apoio de ponte)</div></div>`;
     } else {
-      isPlaying = true;
-      cycleStartTime = performance.now() - pausedElapsed;
-      playIcon.textContent = "⏸";
-      playLabel.textContent = "PAUSAR";
-      btnPlayPause.classList.remove("is-paused");
+      body = `<svg id="viz" viewBox="0 0 480 300" preserveAspectRatio="xMidYMid meet"></svg><div class="viz__bar" id="vizBar"></div>`;
     }
+    stage.innerHTML = `<section class="screen">
+      <div class="screen__head">
+        <div class="screen__eyebrow">${m.nav}</div>
+        <h2 class="screen__title">${s.title}</h2>
+        <p class="screen__line">${s.line}</p>
+      </div>
+      <div class="viz">${body}</div></section>`;
+    if (s.photo) {
+      const img = $("photoImg");
+      img.onerror = () => { img.style.display = "none"; $("photoEmpty").style.display = "block"; };
+    }
+    buildNav();
+    counter.textContent = `${idx + 1} / ${SCREENS.length}`;
+    syncPresenter();
+  }
+  const go = i => show(i);
+
+  /* ---------- animação ---------- */
+  function draw(t) {
+    const s = SCREENS[idx], svg = $("viz");
+    if (svg && s.render && RENDERERS[s.render]) RENDERERS[s.render](svg, t);
+    const bar = $("vizBar"); if (bar) bar.style.width = playing ? (t * 100).toFixed(1) + "%" : "0%";
+  }
+  function loop(now) {
+    if (playing) draw(((now - t0) % LOOP) / LOOP);
+    else if (dirty) { draw(SCREENS[idx].key ?? 0.5); dirty = false; }
+    requestAnimationFrame(loop);
+  }
+  function togglePlay() {
+    if (!SCREENS[idx].render) return;
+    playing = !playing;
+    if (playing) t0 = performance.now();
+    else dirty = true;
+    btnPlay.textContent = playing ? "⏸ Pausar" : "▶ Animar";
+    btnPlay.classList.toggle("on", playing);
+  }
+  function restart() {
+    if (!SCREENS[idx].render) return;
+    playing = true; t0 = performance.now();
+    btnPlay.textContent = "⏸ Pausar"; btnPlay.classList.add("on");
   }
 
-  // 4. Loop 60fps
-  function animationLoop(now) {
-    let elapsed = isPlaying ? (now - cycleStartTime) % LOOP_DURATION : pausedElapsed;
-    const t = elapsed / LOOP_DURATION;
-
-    cycleTimerEl.textContent = (elapsed / 1000).toFixed(1) + "s";
-    renderFrame(t);
-
-    requestAnimationFrame(animationLoop);
+  /* ---------- apresentador ---------- */
+  function syncPresenter() {
+    if (popup && !popup.closed) popup.postMessage({ type: "idx", idx }, "*");
+  }
+  function openPresenter() {
+    popup = window.open(location.pathname + "?presenter", "presenter", "width=980,height=760");
   }
 
-  // 5. Dispara o render para cada card
-  function renderFrame(t) {
-    const mod = SLIDES_DATA[currentModuleIndex];
-    mod.cards.forEach((card) => {
-      const svg = document.getElementById(card.id);
-      const prog = document.getElementById(`prog_${card.id}`);
-      if (prog) prog.style.width = `${(t * 100).toFixed(1)}%`;
-      if (svg && window[card.render]) {
-        window[card.render](svg, t);
-      }
+  function presenterView() {
+    document.body.classList.add("presenter");
+    const start = Date.now();
+    const render = () => {
+      const s = SCREENS[idx], m = modOf(s), n = SCREENS[(idx + 1) % SCREENS.length];
+      stage.innerHTML = `<div class="pres">
+        <div class="pres__who">${m.who} · ${m.time}</div>
+        <h2 class="pres__title">${idx + 1}/${SCREENS.length} · ${s.title}</h2>
+        <ul class="pres__notes">${s.notes.map(x => `<li>${x}</li>`).join("")}</ul>
+        <div class="pres__next"><b>Próxima:</b> ${n.title} <span style="color:#64748B">(${modOf(n).who})</span></div>
+        <div class="pres__bar"><button class="ctrl" id="pPrev">‹ Anterior</button><button class="ctrl" id="pNext">Próxima ›</button><span class="pres__clock" id="pClock"></span></div></div>`;
+      $("pPrev").onclick = () => window.opener && window.opener.postMessage({ type: "nav", d: -1 }, "*");
+      $("pNext").onclick = () => window.opener && window.opener.postMessage({ type: "nav", d: 1 }, "*");
+    };
+    window.addEventListener("message", e => { if (e.data && e.data.type === "idx") { idx = e.data.idx; render(); } });
+    setInterval(() => { const c = $("pClock"); if (c) { const sec = Math.floor((Date.now() - start) / 1000); c.textContent = String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0"); } }, 500);
+    render();
+    if (window.opener) window.opener.postMessage({ type: "hello" }, "*");
+    window.addEventListener("keydown", e => {
+      if (!window.opener) return;
+      if (["ArrowRight", "PageDown"].includes(e.key)) window.opener.postMessage({ type: "nav", d: 1 }, "*");
+      if (["ArrowLeft", "PageUp"].includes(e.key)) window.opener.postMessage({ type: "nav", d: -1 }, "*");
     });
   }
 
-  // 6. Eventos
-  btnPrev.onclick = () => selectModule(currentModuleIndex - 1);
-  btnNext.onclick = () => selectModule(currentModuleIndex + 1);
-  btnPlayPause.onclick = togglePlay;
-  btnRestart.onclick = restartCycle;
-  btnPresenter.onclick = () => {
-    document.body.classList.toggle("presenter-mode");
-    btnPresenter.classList.toggle("active");
-  };
+  /* ---------- eventos ---------- */
+  if (isPresenter) { presenterView(); return; }
 
-  window.addEventListener("keydown", (e) => {
-    if (e.target.matches("input, textarea, select")) return;
-    if (e.key === "ArrowRight") selectModule(currentModuleIndex + 1);
-    else if (e.key === "ArrowLeft") selectModule(currentModuleIndex - 1);
-    else if (e.key === " ") { e.preventDefault(); togglePlay(); }
-    else if (e.key.toLowerCase() === "r") restartCycle();
-    else if (e.key.toLowerCase() === "n") {
-      document.body.classList.toggle("presenter-mode");
-      btnPresenter.classList.toggle("active");
-    }
+  $("btnPrev").onclick = () => go(idx - 1);
+  $("btnNext").onclick = () => go(idx + 1);
+  btnPlay.onclick = togglePlay;
+  $("btnPresenter").onclick = openPresenter;
+  window.addEventListener("message", e => {
+    if (!e.data) return;
+    if (e.data.type === "nav") go(idx + e.data.d);
+    if (e.data.type === "hello") syncPresenter();
+  });
+  window.addEventListener("keydown", e => {
+    const k = e.key;
+    if (["ArrowRight", "PageDown"].includes(k)) { e.preventDefault(); go(idx + 1); }
+    else if (["ArrowLeft", "PageUp"].includes(k)) { e.preventDefault(); go(idx - 1); }
+    else if (k === " ") { e.preventDefault(); togglePlay(); }
+    else if (k === "Home") go(0);
+    else if (k === "End") go(SCREENS.length - 1);
+    else if (/^[1-6]$/.test(k)) go(SCREENS.findIndex(s => s.mod === +k));
+    else if (k.toLowerCase() === "r") restart();
+    else if (k.toLowerCase() === "n") openPresenter();
+    else if (k.toLowerCase() === "f") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
   });
 
-  // 7. Boot
-  selectModule(0);
-  requestAnimationFrame(animationLoop);
+  show(0);
+  requestAnimationFrame(loop);
 })();
